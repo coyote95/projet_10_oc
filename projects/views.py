@@ -1,29 +1,26 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from projects.models import Project, Issue, Comment
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
 
 
-class ProjectAPIView(APIView):
+class ProjectViewset(ModelViewSet):
+    serializer_class = ProjectSerializer
 
-    def get(self, *args, **kwargs):
-        projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
-
-
-class IssueAPIView(APIView):
-
-    def get(self, *args, **kwargs):
-        issues = Issue.objects.all()
-        serializer = IssueSerializer(issues, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Project.objects.all()
 
 
-class CommentAPIView(APIView):
+class IssueViewset(ModelViewSet):
+    serializer_class = IssueSerializer
 
-    def get(self, *args, **kwargs):
-        comments = Comment.objects.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Issue.objects.all()
+
+
+class CommentViewset(ModelViewSet):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.all()

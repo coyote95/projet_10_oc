@@ -3,19 +3,20 @@ from django.urls import path, include
 from rest_framework import routers
 
 from users.views import UserViewset, SignupView, UsersAPIView
-from projects.views import ProjectAPIView, IssueAPIView, CommentAPIView
+from projects.views import ProjectViewset, IssueViewset, CommentViewset
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
+
 router.register(r'users', UserViewset)
+router.register('projects',ProjectViewset, basename='projects')
+router.register('issues',IssueViewset,basename='issues')
+router.register('comments',CommentViewset,basename='comments')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('signup/', SignupView.as_view(), name='signup'),
     path('api/users/', UsersAPIView.as_view()),
-    path('api/projects/', ProjectAPIView.as_view()),
-    path('api/issues/', IssueAPIView.as_view()),
-    path('api/comments/',CommentAPIView.as_view()),
-
+    path('api/',include(router.urls))
 ]
