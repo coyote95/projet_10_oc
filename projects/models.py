@@ -80,7 +80,7 @@ class Issue(models.Model):
 
 class Comment(models.Model):
     text = models.TextField()
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_time = models.DateTimeField(auto_now_add=True)
