@@ -1,14 +1,13 @@
-from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 from users.models import User
 
 
-class UserSerializer(HyperlinkedModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'age', 'can_be_contacted',' can_data_be_shared ']
+        fields = ['id', 'username', 'age', 'can_be_contacted', 'can_data_be_shared']
 
-
-class UserSerializer2(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'age', 'can_be_contacted', 'can_data_be_shared' ]
+    def validate_age(self,age):
+        if age <=15:
+            raise ValidationError("Désolée vous n'avez pas l'âge requis." )
+        return age
