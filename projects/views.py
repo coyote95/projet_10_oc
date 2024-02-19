@@ -5,7 +5,14 @@ from projects.models import Project, Issue, Comment
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
 
 
-class ProjectViewset(ModelViewSet):
+class AdminProjectViewset(ModelViewSet):
+    serializer_class = ProjectSerializer
+
+    def get_queryset(self):
+        return Project.objects.all()
+
+
+class ProjectViewset(ReadOnlyModelViewSet):
     serializer_class = ProjectSerializer
 
     def get_queryset(self):
@@ -16,14 +23,28 @@ class ProjectViewset(ModelViewSet):
         return queryset
 
 
-class IssueViewset(ModelViewSet):
+class AdminIssuetViewset(ModelViewSet):
     serializer_class = IssueSerializer
 
     def get_queryset(self):
         return Issue.objects.all()
 
 
-class CommentViewset(ModelViewSet):
+class IssueViewset(ReadOnlyModelViewSet):
+    serializer_class = IssueSerializer
+
+    def get_queryset(self):
+        return Issue.objects.all()
+
+
+class AdminCommentViewset(ModelViewSet):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.all()
+
+
+class CommentViewset(ReadOnlyModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
