@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from users.views import UserViewset,  AdminUserViewset
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from users.views import UserViewset, AdminUserViewset
 from projects.views import ProjectViewset, IssueViewset, CommentViewset, AdminProjectViewset, AdminIssuetViewset, \
     AdminCommentViewset
 
@@ -22,5 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # path('signup/', SignupView.as_view(), name='signup'),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

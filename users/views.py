@@ -1,14 +1,9 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from django.views.generic.edit import CreateView
-from django.conf import settings
-from django.contrib.auth import login
+from rest_framework import status
 
 from users.models import User
 from users.serializers import UserSerializer
-from users.forms import SignupForm
 
 
 class AdminUserViewset(ModelViewSet):
@@ -16,6 +11,28 @@ class AdminUserViewset(ModelViewSet):
 
     def get_queryset(self):
         return User.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        # Vérifier si le mot de passe est modifié
+        password_modified = 'password' in serializer.validated_data and instance.password != serializer.validated_data[
+            'password']
+
+        # Effectuer la mise à jour
+        self.perform_update(serializer)
+
+        # Si le mot de passe est modifié, s'assurer qu'il reste haché
+        if password_modified:
+            instance.set_password(serializer.validated_data['password'])
+            instance.save()
+
+        return Response(serializer.data)
+
+
 
 
 class UserViewset(ReadOnlyModelViewSet):
