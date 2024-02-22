@@ -10,7 +10,7 @@ class CommentSerializer(ModelSerializer):
 
 
 class IssueSerializer(ModelSerializer):
-    comments = CommentSerializer(many=True)
+    comments = CommentSerializer(many=True,required=False)
 
     class Meta:
         model = Issue
