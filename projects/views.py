@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from projects.models import Project, Issue, Comment
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
-from projects.permissions import IsAdminAuthenticated,  IsAuthorOrReadOnly
+from projects.permissions import IsAdminAuthenticated,  IsAuthorOrReadOnly, IsContributorOrReadOnly
 
 
 class AdminProjectViewset(ModelViewSet):
@@ -37,6 +37,7 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
+    permission_classes = [IsContributorOrReadOnly]
 
     def get_queryset(self):
         return Issue.objects.all()
