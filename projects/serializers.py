@@ -1,3 +1,19 @@
+"""
+Module defining serializers for the 'projects' application using Django REST framework.
+
+Classes:
+    - CommentSerializer(ModelSerializer):
+        fields = ["id", "text", "issue", "author", "uuid", "created_time"]
+
+    - IssueSerializer(ModelSerializer):
+        fields = ["id", "text", "issue", "author", "uuid", "created_time"]
+
+    - ProjectSerializer(ModelSerializer):
+        fields = ["id","name", "description", "project", "author", "priority", "tag", "status","created_time",
+        "comments",]
+
+"""
+
 from rest_framework.serializers import ModelSerializer
 
 from projects.models import Project, Issue, Comment

@@ -1,3 +1,24 @@
+"""
+This file defines the administration classes for the Django models in the 'projects' application.
+
+Classes:
+    - ProjectContributorInline(admin.TabularInline):
+        Attributes:
+            - model: The associated model for project contributors.
+
+    - ProjectAdmin(admin.ModelAdmin):
+            - list_display: "name", "description", "type", "author", "created_time", "display_contributors".
+
+    - IssueAdmin(admin.ModelAdmin):
+            - list_display: "name", "description", "project", "author", "priority", "tag", "status", "created_time".
+
+    - CommentAdmin(admin.ModelAdmin):
+            - list_display: "text", "issue", "author", "uuid", "created_time".
+
+    - ProjectContributorAdmin(admin.ModelAdmin):
+            - list_display: "contributor", "project".
+"""
+
 from django.contrib import admin
 from projects.models import Project, Issue, Comment, ProjectContributor
 

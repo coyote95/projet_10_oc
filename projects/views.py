@@ -1,7 +1,30 @@
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+"""
+Module defining viewsets for the 'projects' application using Django REST framework.
 
+Classes:
+    - AdminProjectViewset(ModelViewSet):
+        Viewset for administrative actions on Project model. Requires admin authentication.
+
+    - ProjectViewset(ModelViewSet):
+        Viewset for basic actions on Project model. Requires user authentication and restricts actions to the author.
+
+    - AdminIssuetViewset(ModelViewSet):
+        Viewset for administrative actions on Issue model. Requires admin authentication.
+
+    - IssueViewset(ModelViewSet):
+        Viewset for basic actions on Issue model. Requires user authentication and restricts actions
+         to contributors or authors.
+
+    - AdminCommentViewset(ModelViewSet):
+        Viewset for administrative actions on Comment model. Requires admin authentication.
+
+    - CommentViewset(ModelViewSet):
+        Viewset for basic actions on Comment model. Requires user authentication and restricts actions
+         to contributors or authors.
+"""
+
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from projects.models import Project, Issue, Comment
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
@@ -28,11 +51,9 @@ class ProjectViewset(ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        # Attribuer l'utilisateur actuel comme auteur lors de la création
         serializer.save(author=self.request.user)
 
     def perform_update(self, serializer):
-        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
         serializer.save(author=self.request.user)
 
 
@@ -46,17 +67,15 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsContributoOrAuthorOrReadOnly]
+    permission_classes = [IsContributoOrAuthorOrReadOnly, IsAuthenticated]
 
     def get_queryset(self):
         return Issue.objects.all()
 
     def perform_create(self, serializer):
-        # Attribuer l'utilisateur actuel comme auteur lors de la création
         serializer.save(author=self.request.user)
 
     def perform_update(self, serializer):
-        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
         serializer.save(author=self.request.user)
 
 
@@ -70,14 +89,13 @@ class AdminCommentViewset(ModelViewSet):
 
 class CommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = [IsContributoOrAuthorOrReadOnly, IsAuthenticated]
 
     def get_queryset(self):
         return Comment.objects.all()
 
     def perform_create(self, serializer):
-        # Attribuer l'utilisateur actuel comme auteur lors de la création
         serializer.save(author=self.request.user)
 
     def perform_update(self, serializer):
-        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
         serializer.save(author=self.request.user)

@@ -1,21 +1,34 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated
+"""
+File defining custom permissions for the 'projects' application using Django REST framework.
+
+Classes:
+    - IsAdminAuthenticated(BasePermission):
+        Custom permission class that allows access only to authenticated superusers.
+
+    - IsAuthorOrReadOnly(BasePermission):
+        Custom permission class that allows full access for safe methods (GET, HEAD, OPTIONS)
+        and restricts modification to the author of the object.
+
+    - IsContributoOrAuthorOrReadOnly(BasePermission):
+        Custom permission class that allows full access for safe methods (GET, HEAD, OPTIONS),
+        allows the creation of objects if the user is the author or a contributor of the project,
+        and restricts modification to the author or contributors of the object.
+"""
+
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 from projects.models import Project
 
 
 class IsAdminAuthenticated(BasePermission):
 
     def has_permission(self, request, view):
-        # Ne donnons l’accès qu’aux utilisateurs administrateurs authentifiés
         return bool(request.user and request.user.is_authenticated and request.user.is_superuser)
 
 
 class IsAuthorOrReadOnly(BasePermission):
-    """
-    Custom permission to only allow authors of an object to edit it.
-    """
 
     def has_object_permission(self, request, view, obj):
-        # If the request method is safe (GET, HEAD, OPTIONS), allow any access
+        # If the request method is safe (GET, HEAD, OPTIONS), allow full access
         if request.method in SAFE_METHODS:
             return True
 
@@ -24,25 +37,21 @@ class IsAuthorOrReadOnly(BasePermission):
 
 
 class IsContributoOrAuthorOrReadOnly(BasePermission):
-    """
-    Custom permission to only allow contributors or the author of the project associated with the issue to edit it.
-    """
 
     def has_permission(self, request, view):
-        # Si la méthode de requête est sécurisée (GET, HEAD, OPTIONS), permettre tout accès
+        # If the request method is safe (GET, HEAD, OPTIONS), allow full access
         if request.method in SAFE_METHODS:
             return True
 
-        # Vérifier si l'utilisateur demandeur est l'auteur du projet ou un contributeur du projet associé à l'issue
         if request.method == "POST":
-            project_id = request.data.get("project")  # Assurez-vous que le champ 'project' est inclus dans la requête
+            project_id = request.data.get("project")
             return project_id and (
                 request.user == Project.objects.get(id=project_id).author
                 or request.user in Project.objects.get(id=project_id).contributors.all()
             )
 
     def has_object_permission(self, request, view, obj):
-        # Si la méthode de requête est sécurisée (GET, HEAD, OPTIONS), permettre tout accès
+        # If the request method is safe (GET, HEAD, OPTIONS), allow full access
         if request.method in SAFE_METHODS:
             return request.user == obj.project.author or request.user in obj.project.contributors
 
