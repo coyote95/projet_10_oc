@@ -1,3 +1,22 @@
+"""
+File defining viewsets for the 'users' application using Django REST framework.
+
+Classes:
+    - AdminUserViewset(ModelViewSet):
+        Viewset for administrative actions on User model. Requires admin authentication.
+        Methods:
+            - get_queryset: Returns all users.
+            - update: Updates a user, checks for password modification, and ensures it remains hashed.
+
+    - UserViewset(ModelViewSet):
+        Viewset for basic actions on User model. Requires user authentication and restricts actions to
+         the owner profile.
+
+        Methods:
+            - get_queryset: Returns users with can_data_be_shared set to True.
+            - update: Updates a user, checks for password modification, and ensures it remains hashed.
+"""
+
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.response import Response
 from users.permissions import IsAdminAuthenticated, IsOwnerProfile
@@ -18,17 +37,11 @@ class AdminUserViewset(ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-
-        # Vérifier si le mot de passe est modifié
-        password_modified = (
+        password_modified = (  # Check if the password is modified
             "password" in serializer.validated_data and instance.password != serializer.validated_data["password"]
         )
-
-        # Effectuer la mise à jour
-        self.perform_update(serializer)
-
-        # Si le mot de passe est modifié, s'assurer qu'il reste haché
-        if password_modified:
+        self.perform_update(serializer)  # Perform the update
+        if password_modified:  # If the password is modified, ensure it remains hashed
             instance.set_password(serializer.validated_data["password"])
             instance.save()
 
@@ -47,17 +60,11 @@ class UserViewset(ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-
-        # Vérifier si le mot de passe est modifié
-        password_modified = (
+        password_modified = (  # Check if the password is modified
             "password" in serializer.validated_data and instance.password != serializer.validated_data["password"]
         )
-
-        # Effectuer la mise à jour
-        self.perform_update(serializer)
-
-        # Si le mot de passe est modifié, s'assurer qu'il reste haché
-        if password_modified:
+        self.perform_update(serializer)  # Perform the update
+        if password_modified:  # If the password is modified, ensure it remains hashed
             instance.set_password(serializer.validated_data["password"])
             instance.save()
 

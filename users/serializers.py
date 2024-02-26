@@ -1,3 +1,15 @@
+"""
+File defining a serializer for the 'User' model in the 'users' application using Django REST framework.
+
+Classes:
+    - UserSerializer(ModelSerializer):
+        Fields: "id", "username", "password", "age", "can_be_contacted", "can_data_be_shared".
+
+        Methods:
+            - validate_age: Custom validation method for the 'age' field, ensuring users are at least 16 years old.
+            - create: Custom creation method to handle password validation and create a new user instance.
+"""
+
 from rest_framework.serializers import ModelSerializer, ValidationError
 from users.models import User
 
