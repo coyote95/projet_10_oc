@@ -7,14 +7,16 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0004_alter_comment_issue'),
+        ("projects", "0004_alter_comment_issue"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='comment',
-            name='issue',
-            field=models.ForeignKey(default=123, on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='projects.issue'),
+            model_name="comment",
+            name="issue",
+            field=models.ForeignKey(
+                default=123, on_delete=django.db.models.deletion.CASCADE, related_name="comments", to="projects.issue"
+            ),
             preserve_default=False,
         ),
     ]

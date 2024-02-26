@@ -22,7 +22,7 @@ class ProjectViewset(ModelViewSet):
 
     def get_queryset(self):
         queryset = Project.objects.all()
-        project_id = self.request.GET.get('project_id')
+        project_id = self.request.GET.get("project_id")
         if project_id is not None:
             queryset = queryset.filter(id=project_id)
         return queryset

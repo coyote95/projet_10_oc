@@ -4,22 +4,17 @@ import uuid
 
 
 class Project(models.Model):
-    BACKEND = 'BACKEND'
-    FRONTEND = 'FRONTEND'
-    IOS = 'IOS'
-    ANDROID = 'ANDROID'
+    BACKEND = "BACKEND"
+    FRONTEND = "FRONTEND"
+    IOS = "IOS"
+    ANDROID = "ANDROID"
 
-    TYPE_CHOICES = (
-        (BACKEND, 'back-end'),
-        (FRONTEND, 'front-end'),
-        (IOS, 'ios'),
-        (ANDROID, 'android')
-    )
+    TYPE_CHOICES = ((BACKEND, "back-end"), (FRONTEND, "front-end"), (IOS, "ios"), (ANDROID, "android"))
     name = models.CharField(max_length=100, verbose_name="titre")
     description = models.TextField(verbose_name="description")
     type = models.CharField(max_length=25, choices=TYPE_CHOICES)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
-    contributors = models.ManyToManyField(User, through='ProjectContributor', related_name='contributor')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
+    contributors = models.ManyToManyField(User, through="ProjectContributor", related_name="contributor")
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -35,43 +30,31 @@ class ProjectContributor(models.Model):
 
 
 class Issue(models.Model):
-    LOW = 'LOW'
-    MEDIUM = 'MEDIUM'
-    HIGH = 'HIGH'
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
 
-    PRIORITIES_CHOICES = (
-        (LOW, 'low'),
-        (MEDIUM, 'medium'),
-        (HIGH, 'high')
-    )
+    PRIORITIES_CHOICES = ((LOW, "low"), (MEDIUM, "medium"), (HIGH, "high"))
 
-    BUG = 'BUG'
-    FEATURE = 'FEATURE'
-    TASK = 'TASK'
+    BUG = "BUG"
+    FEATURE = "FEATURE"
+    TASK = "TASK"
 
-    TAGS_CHOICES = (
-        (BUG, 'bug'),
-        (FEATURE, 'feature'),
-        (TASK, 'task')
-    )
+    TAGS_CHOICES = ((BUG, "bug"), (FEATURE, "feature"), (TASK, "task"))
 
-    TODO = 'TODO'
-    INPROGRESS = 'INPROGRESS'
-    FINISHED = 'FINISHED'
+    TODO = "TODO"
+    INPROGRESS = "INPROGRESS"
+    FINISHED = "FINISHED"
 
-    STATUS_CHOICES = (
-        (TODO, 'to do'),
-        (INPROGRESS, 'in progress'),
-        (TASK, 'task')
-    )
+    STATUS_CHOICES = ((TODO, "to do"), (INPROGRESS, "in progress"), (TASK, "task"))
 
     name = models.CharField(max_length=100)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    author = models.ForeignKey(User,on_delete=models.CASCADE)
-    priority= models.CharField(max_length=25,choices=PRIORITIES_CHOICES)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    priority = models.CharField(max_length=25, choices=PRIORITIES_CHOICES)
     tag = models.CharField(max_length=25, choices=TAGS_CHOICES)
-    status = models.CharField(max_length=25,choices=STATUS_CHOICES)
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES)
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
