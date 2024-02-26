@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "sofdesk"
+name = "softdesk"
 version = "0.1.0"
 description = "Description de votre projet"
-authors = ["Coyote on "]
+authors = ["Coyote"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python="3.11.4"
+python="^3.11.4"
 django = "3.2.5"
 djangorestframework = "3.12.4"
 requests = "2.26.0"
