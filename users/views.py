@@ -39,7 +39,7 @@ class UserViewset(ModelViewSet):
     permission_classes = [IsOwnerProfile]
 
     def get_queryset(self):
-        return User.objects.all()
+        return User.objects.filter(can_data_be_shared=True)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
