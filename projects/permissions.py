@@ -16,7 +16,9 @@ Classes:
 """
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from projects.models import Project
+from django.db.models import Q
+
+from projects.models import Project, Issue
 
 
 class IsAdminAuthenticated(BasePermission):
@@ -36,12 +38,14 @@ class IsAuthorOrReadOnly(BasePermission):
         return obj.author == request.user
 
 
-class IsContributoOrAuthorOrReadOnly(BasePermission):
+class IsContributorOrAuthorOrReadOnly(BasePermission):
+    """
+    Custom permission to only allow contributors, the author, or read-only access.
+    """
 
     def has_permission(self, request, view):
-        # If the request method is safe (GET, HEAD, OPTIONS), allow full access
-        if request.method in SAFE_METHODS:
-            return True
+        if request.method in SAFE_METHODS or request.method == "DELETE" or request.method == "PATCH":
+            return self._is_contributor_or_author(request)
 
         if request.method == "POST":
             project_id = request.data.get("project")
@@ -51,8 +55,13 @@ class IsContributoOrAuthorOrReadOnly(BasePermission):
             )
 
     def has_object_permission(self, request, view, obj):
-        # If the request method is safe (GET, HEAD, OPTIONS), allow full access
         if request.method in SAFE_METHODS:
-            return request.user == obj.project.author or request.user in obj.project.contributors
+            return self._is_contributor_or_author(request, obj.project)
 
         return obj.author == request.user
+
+    def _is_contributor_or_author(self, request, project=None):
+        if project is None:
+            return Project.objects.filter(Q(author=request.user) | Q(contributors=request.user)).exists()
+        else:
+            return request.user == project.author or request.user in project.contributors.all()

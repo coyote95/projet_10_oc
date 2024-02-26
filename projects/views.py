@@ -32,7 +32,7 @@ from rest_framework.response import Response
 from projects.models import Project, Issue, Comment
 from users.models import User
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
-from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsContributoOrAuthorOrReadOnly
+from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsContributorOrAuthorOrReadOnly
 
 
 class AdminProjectViewset(ModelViewSet):
@@ -55,9 +55,6 @@ class ProjectViewset(ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
     @action(detail=True, methods=["post"])
@@ -105,7 +102,7 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsContributoOrAuthorOrReadOnly, IsAuthenticated]
+    permission_classes = [IsContributorOrAuthorOrReadOnly, IsAuthenticated]
 
     def get_queryset(self):
         return Issue.objects.all()
@@ -113,13 +110,10 @@ class IssueViewset(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def perform_update(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class AdminCommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsContributoOrAuthorOrReadOnly]
+    permission_classes = [IsAdminAuthenticated]
 
     def get_queryset(self):
         return Comment.objects.all()
@@ -127,13 +121,10 @@ class AdminCommentViewset(ModelViewSet):
 
 class CommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsContributoOrAuthorOrReadOnly, IsAuthenticated]
+    permission_classes = [IsContributorOrAuthorOrReadOnly, IsAuthenticated]
 
     def get_queryset(self):
         return Comment.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
         serializer.save(author=self.request.user)
