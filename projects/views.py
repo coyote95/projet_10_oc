@@ -23,10 +23,14 @@ Classes:
          to contributors or authors.
 """
 
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from projects.models import Project, Issue, Comment
+from users.models import User
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
 from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsContributoOrAuthorOrReadOnly
 
@@ -55,6 +59,40 @@ class ProjectViewset(ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
+
+    @action(detail=True, methods=["post"])
+    def add_contributor(self, request, pk=None):
+        project = self.get_object()
+        contributor_id = request.data.get("contributor")  # Assuming the contributor ID is sent in the request data
+        if contributor_id is not None:
+            try:
+                contributor = User.objects.get(pk=contributor_id)
+                project.contributors.add(contributor)
+                project.save()
+                return Response({"detail": "Contributor added successfully."})
+            except User.DoesNotExist:
+                return Response({"detail": "Contributor not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(
+                {"detail": "Contributor ID not provided in the request data."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=["post"])
+    def del_contributor(self, request, pk=None):
+        project = self.get_object()
+        contributor_id = request.data.get("contributor")  # Assuming the contributor ID is sent in the request data
+        if contributor_id is not None:
+            try:
+                contributor = User.objects.get(pk=contributor_id)
+                project.contributors.remove(contributor)
+                project.save()
+                return Response({"detail": "Contributor removed successfully."})
+            except User.DoesNotExist:
+                return Response({"detail": "Contributor not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(
+                {"detail": "Contributor ID not provided in the request data."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class AdminIssuetViewset(ModelViewSet):
