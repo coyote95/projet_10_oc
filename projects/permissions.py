@@ -23,7 +23,7 @@ class IsAuthorOrReadOnly(BasePermission):
         return obj.author == request.user
 
 
-class IsContributorOrReadOnly(BasePermission):
+class IsContributoOrAuthorOrReadOnly(BasePermission):
     """
     Custom permission to only allow contributors or the author of the project associated with the issue to edit it.
     """
@@ -34,20 +34,19 @@ class IsContributorOrReadOnly(BasePermission):
             return True
 
         # Vérifier si l'utilisateur demandeur est l'auteur du projet ou un contributeur du projet associé à l'issue
-        project_id = request.data.get('project')  # Assurez-vous que le champ 'project' est inclus dans la requête
-        return project_id and (
-            request.user == Project.objects.get(id=project_id).author
-            or request.user in Project.objects.get(id=project_id).contributors.all()
-        )
+        if request.method == 'POST':
+            project_id = request.data.get('project')  # Assurez-vous que le champ 'project' est inclus dans la requête
+            return project_id and (
+                    request.user == Project.objects.get(id=project_id).author
+                    or request.user in Project.objects.get(id=project_id).contributors.all()
+            )
 
     def has_object_permission(self, request, view, obj):
         # Si la méthode de requête est sécurisée (GET, HEAD, OPTIONS), permettre tout accès
         if request.method in SAFE_METHODS:
-            return True
+            return (
+                    request.user == obj.project.author
+                    or request.user in obj.project.contributors
+            )
 
-        # Vérifier si l'utilisateur demandeur est l'auteur du projet ou un contributeur du projet associé à l'issue
-        return (
-            request.user == obj.project.author
-            or request.user in obj.project.contributors.all()
-        )
-
+        return obj.author == request.user

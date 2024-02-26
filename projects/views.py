@@ -2,9 +2,10 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+
 from projects.models import Project, Issue, Comment
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
-from projects.permissions import IsAdminAuthenticated,  IsAuthorOrReadOnly, IsContributorOrReadOnly
+from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsContributoOrAuthorOrReadOnly
 
 
 class AdminProjectViewset(ModelViewSet):
@@ -26,6 +27,14 @@ class ProjectViewset(ModelViewSet):
             queryset = queryset.filter(id=project_id)
         return queryset
 
+    def perform_create(self, serializer):
+        # Attribuer l'utilisateur actuel comme auteur lors de la création
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
+        serializer.save(author=self.request.user)
+
 
 class AdminIssuetViewset(ModelViewSet):
     serializer_class = IssueSerializer
@@ -37,15 +46,23 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsContributorOrReadOnly]
+    permission_classes = [IsContributoOrAuthorOrReadOnly]
 
     def get_queryset(self):
         return Issue.objects.all()
 
+    def perform_create(self, serializer):
+        # Attribuer l'utilisateur actuel comme auteur lors de la création
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
+        serializer.save(author=self.request.user)
+
 
 class AdminCommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAdminAuthenticated]
+    permission_classes = [IsContributoOrAuthorOrReadOnly]
 
     def get_queryset(self):
         return Comment.objects.all()
@@ -56,3 +73,11 @@ class CommentViewset(ModelViewSet):
 
     def get_queryset(self):
         return Comment.objects.all()
+
+    def perform_create(self, serializer):
+        # Attribuer l'utilisateur actuel comme auteur lors de la création
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        # Vous pouvez également mettre à jour l'auteur lors de la mise à jour si nécessaire
+        serializer.save(author=self.request.user)
