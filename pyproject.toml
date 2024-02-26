@@ -10,6 +10,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python="^3.11.4"
+setuptools = "69.1.1"
 django = "3.2.5"
 djangorestframework = "3.12.4"
 requests = "2.26.0"
