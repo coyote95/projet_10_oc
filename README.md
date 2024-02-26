@@ -35,6 +35,9 @@ Install project with powershell windows:
 
     
 ## Postman request
+![user](https://github.com/coyote95/projet_10_oc/assets/141831464/b1ecb965-0ebd-4788-a8ff-735231bfe79a)
+![token](https://github.com/coyote95/projet_10_oc/assets/141831464/ccf018ee-baeb-4137-bb1e-2bac51145180)
+![projetc](https://github.com/coyote95/projet_10_oc/assets/141831464/29895883-856b-4252-a9d2-04a6c69620a5)
+![authorization](https://github.com/coyote95/projet_10_oc/assets/141831464/10893d3e-034d-41e0-835d-16cfdcf87dc1)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
