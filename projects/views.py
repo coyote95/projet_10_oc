@@ -32,7 +32,8 @@ from rest_framework.response import Response
 from projects.models import Project, Issue, Comment
 from users.models import User
 from projects.serializers import ProjectSerializer, IssueSerializer, CommentSerializer
-from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsContributorOrAuthorOrReadOnly
+from projects.permissions import IsAdminAuthenticated, IsAuthorOrReadOnly, IsProjectContributor, IsProjectAuthorOrReadOnly
+from django.db.models import Q
 
 
 class AdminProjectViewset(ModelViewSet):
@@ -102,10 +103,11 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsContributorOrAuthorOrReadOnly, IsAuthenticated]
+    # permission_classes = [ IsAuthorOrReadOnly, IsProjectAuthorOrReadOnly | IsProjectContributor ]
+    permission_classes = [ IsAuthorOrReadOnly ,IsProjectAuthorOrReadOnly | IsProjectContributor]
 
     def get_queryset(self):
-        return Issue.objects.all()
+        return Issue.objects.filter(Q(project__author=self.request.user) | Q(project__contributors=self.request.user))
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -121,10 +123,11 @@ class AdminCommentViewset(ModelViewSet):
 
 class CommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsContributorOrAuthorOrReadOnly, IsAuthenticated]
+    permission_classes = [IsProjectAuthorOrReadOnly| IsProjectAuthorOrReadOnly]
 
     def get_queryset(self):
-        return Comment.objects.all()
+        return Comment.objects.filter(
+            Q(issue__project__author=self.request.user) | Q(issue__project__contributors=self.request.user))
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

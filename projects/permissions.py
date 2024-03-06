@@ -32,36 +32,47 @@ class IsAuthorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         # If the request method is safe (GET, HEAD, OPTIONS), allow full access
         if request.method in SAFE_METHODS:
+            print("permission auteur: obj all")
             return True
-
+        print("permission auteur: obj author")
         # Check if the requesting user is the author of the object
         return obj.author == request.user
 
 
-class IsContributorOrAuthorOrReadOnly(BasePermission):
-    """
-    Custom permission to only allow contributors, the author, or read-only access.
-    """
+class IsProjectAuthorOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS or request.method == "DELETE" or request.method == "PATCH":
-            return self._is_contributor_or_author(request)
+        print("autheur")
+        project_id = request.data.get("project")
+        if not project_id:
+            return Project.objects.filter(author=request.user).exists()
+        try:
+            # Get the project instance based on the provided project_id
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return False
 
-        if request.method == "POST":
-            project_id = request.data.get("project")
-            return project_id and (
-                request.user == Project.objects.get(id=project_id).author
-                or request.user in Project.objects.get(id=project_id).contributors.all()
-            )
+        return request.user == project.author
 
-    def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return self._is_contributor_or_author(request, obj.project)
+    # def has_object_permission(self, request, view, obj):
+    #     print("autheur obj")
+    #     return obj.author == request.user
 
-        return obj.author == request.user
 
-    def _is_contributor_or_author(self, request, project=None):
-        if project is None:
-            return Project.objects.filter(Q(author=request.user) | Q(contributors=request.user)).exists()
-        else:
-            return request.user == project.author or request.user in project.contributors.all()
+class IsProjectContributor(BasePermission):
+    def has_permission(self, request, view):
+        print("contributor")
+        project_id = request.data.get("project")
+        if not project_id:
+            return Project.objects.filter(contributors=request.user).exists()
+        try:
+            # Get the project instance based on the provided project_id
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return False
+
+        return request.user in project.contributors.all()
+
+    # def has_object_permission(self, request, view, obj):
+    #     print("bof")
+    #     return obj.author == request.user
