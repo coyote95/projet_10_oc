@@ -104,7 +104,7 @@ class AdminIssuetViewset(ModelViewSet):
 
 class IssueViewset(ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsAuthorOrReadOnly, IsProjectAuthor| IsProjectContributor]
+    permission_classes = [IsAuthenticated,IsAuthorOrReadOnly, IsProjectAuthor| IsProjectContributor]
 
     def get_queryset(self):
         return Issue.objects.filter(Q(project__author=self.request.user) | Q(project__contributors=self.request.user))
@@ -123,7 +123,7 @@ class AdminCommentViewset(ModelViewSet):
 
 class CommentViewset(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrReadOnly, IsProjectAuthor | IsProjectContributor]
+    permission_classes = [IsAuthenticated,IsAuthorOrReadOnly, IsProjectAuthor | IsProjectContributor]
 
     def get_queryset(self):
         return Comment.objects.filter(
