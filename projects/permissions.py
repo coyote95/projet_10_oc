@@ -27,7 +27,7 @@ class IsAdminAuthenticated(BasePermission):
         return bool(request.user and request.user.is_authenticated and request.user.is_superuser)
 
 
-class IsAuthorOrReadOnly(BasePermission):
+class IsOwnerOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # If the request method is safe (GET, HEAD, OPTIONS), allow full access
